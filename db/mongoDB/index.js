@@ -19,12 +19,12 @@ const characteristicSchema = new mongoose.Schema(
 
 const ratingSchema = new mongoose.Schema(
   {
-    star_0: { type: Number },
-    star_1: { type: Number },
-    star_2: { type: Number },
-    star_3: { type: Number },
-    star_4: { type: Number },
-    star_5: { type: Number },
+    star_0: { type: Number, default: 0 },
+    star_1: { type: Number, default: 0 },
+    star_2: { type: Number, default: 0 },
+    star_3: { type: Number, default: 0 },
+    star_4: { type: Number, default: 0 },
+    star_5: { type: Number, default: 0 },
   },
 );
 
