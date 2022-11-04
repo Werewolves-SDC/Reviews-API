@@ -97,6 +97,4 @@ const queries = {
   },
 };
 
-queries.createSchema();
-
 module.exports = queries;
