@@ -1,3 +1,5 @@
+const queries = require('../db/postgres/queries/queries');
+
 module.exports = {
   /**
    * Route returning reviews of particular product_id.
@@ -12,9 +14,17 @@ module.exports = {
    * @param res - Express response object
    */
   getReviews: (req, res) => {
+    const productId = req.query.product_id;
     const {
-      product_id, page = 1, count = 5, sort = 'newest',
+      page = 1, count = 5, sort = 'newest',
     } = req.query;
+    queries.getReviewPG(productId, page, count, sort)
+      .then((result) => {
+        console.log(result);
+        res.status(200).send(result);
+      }).catch((err) => {
+        res.status(404).send(err);
+      });
   },
 
   /**
@@ -26,6 +36,12 @@ module.exports = {
    */
   getReviewMeta: (req, res) => {
     const productId = req.query.product_id;
+    queries.getReviewMetaPG(productId)
+      .then((result) => {
+        res.status(200).send(result);
+      }).catch((err) => {
+        res.status(404).send(err);
+      });
   },
 
   /**
