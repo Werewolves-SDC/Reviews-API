@@ -133,6 +133,50 @@ module.exports = {
     client.release();
   },
 
+  addHelpful: (reviewId) => {
+    const query = {
+      text: `UPDATE reviews
+        SET helpfulness = helpfulness + 1
+        WHERE id=$1
+        ;`,
+      values: [reviewId],
+    };
+
+    return pool.connect()
+      .then((client) => {
+        return client.query(query)
+          .then((res) => {
+            pool.release();
+            return res.rows;
+          }).catch((err) => {
+            pool.release();
+            return err.stack;
+          });
+      });
+  },
+
+  addReport: (reviewId) => {
+    const query = {
+      text: `UPDATE reviews
+      SET reported = true
+      WHERE id=$1
+      ;`,
+      values: [reviewId],
+    };
+
+    return pool.connect()
+      .then((client) => {
+        return client.query(query)
+          .then((res) => {
+            pool.release();
+            return res.rows;
+          }).catch((err) => {
+            pool.release();
+            return err.stack;
+          });
+      });
+  },
+
   getCharacteristics: () => {
     pool.query(`
       SELECT * FROM characteristics;

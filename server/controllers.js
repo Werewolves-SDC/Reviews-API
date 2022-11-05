@@ -23,7 +23,7 @@ module.exports = {
         console.log(result);
         res.status(200).send(result);
       }).catch((err) => {
-        res.status(404).send(err);
+        res.status(500).send(err);
       });
   },
 
@@ -40,7 +40,7 @@ module.exports = {
       .then((result) => {
         res.status(200).send(result);
       }).catch((err) => {
-        res.status(404).send(err);
+        res.status(500).send(err);
       });
   },
 
@@ -62,6 +62,12 @@ module.exports = {
    */
   putHelpful: (req, res) => {
     const reviewId = req.params.review_id;
+    queries.addHelpful(reviewId)
+      .then((result) => {
+        res.status(204).send(result);
+      }).catch((err) => {
+        res.status(500).send(err);
+      });
   },
 
   /**
@@ -73,5 +79,11 @@ module.exports = {
    */
   putReport: (req, res) => {
     const reviewId = req.params.review_id;
+    queries.addReport(reviewId)
+      .then((result) => {
+        res.status(204).send(result);
+      }).catch((err) => {
+        res.status(500).send(err);
+      });
   },
 };
