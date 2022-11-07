@@ -83,29 +83,28 @@ module.exports = {
     if (sort === 'relevent') {
       sortBy = 'date desc';
     }
+    const offset = (page - 1) * count;
 
     // TODO: implement pagination and limit by using page and count
     const query = {
       text: `
-      SELECT id as review_id, rating, summary, recommend, response, body, to_timestamp(date/1000) as date, reviewer_name, helpfulness
+      SELECT id as review_id, rating, summary, recommend, response, body, to_timestamp(date/1000) as date, reviewer_name, helpfulness,
+      ( SELECT coalesce(json_agg(to_json(photo)), '[]')
+        FROM (
+          SELECT reviews_photos.id, reviews_photos.url
+          FROM reviews_photos
+          WHERE reviews_photos.review_id = reviews.id
+        ) photo
+      ) AS photos
       FROM reviews
       WHERE product_id=$1 and reported=false
       ORDER BY ${sortBy}
+      LIMIT $2
+      OFFSET $3
       ;`,
-      values: [productId],
+      values: [productId, count, offset],
     };
-    return pool.connect()
-      .then((client) => {
-        return client.query(query)
-          .then((res) => {
-            client.release();
-            return res.rows;
-          })
-          .catch((err) => {
-            client.release();
-            return err.stack;
-          });
-      });
+    return query;
   },
 
   getReviewMetaPG: async (productId) => {
