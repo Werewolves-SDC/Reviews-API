@@ -1,7 +1,7 @@
-const express = require('express');
+const Router = require('express-promise-router');
 const controllers = require('./controllers');
 
-const router = express.Router();
+const router = new Router();
 
 router.get('/', controllers.getReviews);
 router.get('/meta', controllers.getReviewMeta);

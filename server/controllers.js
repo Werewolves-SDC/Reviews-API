@@ -1,4 +1,6 @@
+/* eslint-disable camelcase */
 const queries = require('../db/postgres/queries/queries');
+const pool = require('../db/postgres/index');
 
 module.exports = {
   /**
@@ -13,18 +15,18 @@ module.exports = {
    * @param req - Express request object
    * @param res - Express response object
    */
-  getReviews: (req, res) => {
-    const productId = req.query.product_id;
-    const {
-      page = 1, count = 5, sort = 'newest',
-    } = req.query;
-    queries.getReviewPG(productId, page, count, sort)
-      .then((result) => {
-        console.log(result);
-        res.status(200).send(result);
-      }).catch((err) => {
-        res.status(404).send(err);
-      });
+  getReviews: async (req, res) => {
+    try {
+      const productId = req.query.product_id;
+      const {
+        page = 1, count = 5, sort = 'newest',
+      } = req.query;
+      const reviewQuery = queries.getReviewPG(productId, page, count, sort);
+      const { rows: reviews } = await pool.query(reviewQuery.text, reviewQuery.values);
+      res.status(200).send(reviews);
+    } catch (err) {
+      res.status(500).send(err);
+    }
   },
 
   /**
@@ -34,14 +36,17 @@ module.exports = {
    * @param {*} req - Express request object
    * @param {*} res - Express response object
    */
-  getReviewMeta: (req, res) => {
-    const productId = req.query.product_id;
-    queries.getReviewMetaPG(productId)
-      .then((result) => {
-        res.status(200).send(result);
-      }).catch((err) => {
-        res.status(404).send(err);
-      });
+  getReviewMeta: async (req, res) => {
+    try {
+      const productId = req.query.product_id;
+      const metaQuery = queries.getReviewMetaPG(productId);
+      console.log(metaQuery);
+      const { rows: reviewMeta } = await pool.query(metaQuery);
+      console.log(reviewMeta);
+      res.status(200).send(reviewMeta[0].row_to_json.json_build_object);
+    } catch (err) {
+      res.status(500).send(err);
+    }
   },
 
   /**
@@ -51,7 +56,12 @@ module.exports = {
    * @param {*} res - Express response object
    */
   addReview: (req, res) => {
-
+    queries.addReviewPG(req.body)
+      .then(() => {
+        res.status(201).send('Review Posted');
+      }).catch((err) => {
+        res.stauts(500).send(err);
+      });
   },
 
   /**
@@ -62,6 +72,12 @@ module.exports = {
    */
   putHelpful: (req, res) => {
     const reviewId = req.params.review_id;
+    queries.addHelpful(reviewId)
+      .then((result) => {
+        res.status(204).send(result);
+      }).catch((err) => {
+        res.status(500).send(err);
+      });
   },
 
   /**
@@ -73,5 +89,11 @@ module.exports = {
    */
   putReport: (req, res) => {
     const reviewId = req.params.review_id;
+    queries.addReport(reviewId)
+      .then((result) => {
+        res.status(204).send(result);
+      }).catch((err) => {
+        res.status(500).send(err);
+      });
   },
 };
