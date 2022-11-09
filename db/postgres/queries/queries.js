@@ -7,6 +7,30 @@ const format = require('pg-format');
 const pool = require('../index');
 
 module.exports = {
+  createIndex: () => {
+    pool.query(`CREATE INDEX idx_productid_characteristics ON characteristics(product_id);`, (err, res) => {
+      console.log(err ? err.stack : res);
+    });
+
+    pool.query(`CREATE INDEX idx_characteristicid_charrev ON characteristics_reviews(characteristic_id);`, (err, res) => {
+      console.log(err ? err.stack : res);
+    });
+
+    pool.query(`CREATE INDEX idx_reviewid_charrev ON characteristics_reviews(review_id);`, (err, res) => {
+      console.log(err ? err.stack : res);
+    });
+
+    pool.query(`CREATE INDEX idx_productid_review ON reviews(product_id);`, (err, res) => {
+      console.log(err ? err.stack : res);
+    });
+
+    pool.query(`CREATE INDEX idx_reviewid_revphoto ON reviews_photos(review_id);`, (err, res) => {
+      console.log(err ? err.stack : res);
+    });
+
+    pool.release();
+  },
+
   createSchema: () => {
     pool.query(`CREATE TABLE IF NOT EXISTS reviews (
       id SERIAL PRIMARY KEY,
