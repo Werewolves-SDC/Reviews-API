@@ -40,9 +40,7 @@ module.exports = {
     try {
       const productId = req.query.product_id;
       const metaQuery = queries.getReviewMetaPG(productId);
-      console.log(metaQuery);
       const { rows: reviewMeta } = await pool.query(metaQuery);
-      console.log(reviewMeta);
       res.status(200).send(reviewMeta[0].row_to_json.json_build_object);
     } catch (err) {
       res.status(500).send(err);
